@@ -50,8 +50,22 @@ def solve_n_queens(n):
             row.append(Bool('r_%d_c_%d' % (i, j)))
         B.append(row)
     ###########################################################################
-    # TODO: add constraints
-    raise NotImplementedError
+
+    #one queen for every column
+    for i in range(n):
+        s.add(Sum([If(Bool('r_%d_c_%d' % (i, j)),1,0) for j in range(n)]) == 1)
+    # one queen for every raw
+    for j in range(n):
+        s.add(Sum([If(Bool('r_%d_c_%d' % (i, j)),1,0) for i in range(n)]) == 1)
+
+    # Diagonal constraint
+    for k in range(2*n):
+        s.add(Sum([If(Bool('r_%d_c_%d' % (k-j, j)), 1, 0) for j in range(k+1)]) <= 1)
+        s.add(Sum([If(Bool('r_%d_c_%d' % (k-j, n-j-1)),1,0) for j in range(k+1)]) <= 1)
+        if (not (i < n and j < n)):
+            s.pop()
+            s.pop()
+
     ###########################################################################
     return s
 
@@ -92,6 +106,6 @@ def display_chessboard(chessboard):
 
 if __name__ == "__main__":
     warm_up()
-    n = 4
+    n = 8
     s = solve_n_queens(n)
     generate_display_chessboard(n, s)
